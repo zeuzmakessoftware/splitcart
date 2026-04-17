@@ -5,32 +5,36 @@ struct RemoteImageBackground: View {
     let currentIndex: Int
 
     var body: some View {
-        AsyncImage(url: currentURL) { phase in
-            switch phase {
-            case .success(let image):
-                image
-                    .resizable()
-                    .scaledToFill()
-                    .overlay {
-                        LinearGradient(
-                            colors: [
-                                Color(red: 0.36, green: 0.20, blue: 0.09).opacity(0.55),
-                                .clear,
-                                .clear,
-                                Color(red: 0.22, green: 0.08, blue: 0.10).opacity(0.40)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    }
-            case .failure(_):
-                fallbackView
-            case .empty:
-                fallbackView.redacted(reason: .placeholder)
-            @unknown default:
-                fallbackView
+        GeometryReader { proxy in
+            AsyncImage(url: currentURL) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .overlay {
+                            LinearGradient(
+                                colors: [
+                                    Color(red: 0.36, green: 0.20, blue: 0.09).opacity(0.55),
+                                    .clear,
+                                    .clear,
+                                    Color(red: 0.22, green: 0.08, blue: 0.10).opacity(0.40)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        }
+                case .failure(_):
+                    fallbackView
+                case .empty:
+                    fallbackView.redacted(reason: .placeholder)
+                @unknown default:
+                    fallbackView
+                }
             }
+            .frame(width: proxy.size.width, height: proxy.size.height)
         }
+        .clipped()
     }
 
     private var currentURL: URL? {

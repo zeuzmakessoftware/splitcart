@@ -30,6 +30,7 @@ struct FeaturedCard: View {
                     endPoint: .bottom
                 )
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .clipShape(RoundedRectangle(cornerRadius: 34, style: .continuous))
 
             VStack(alignment: .leading, spacing: 14) {
@@ -92,6 +93,7 @@ struct FeaturedCard: View {
                     .padding(.bottom, 16)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .overlay(alignment: .topLeading) {
             swipeBadge(text: "PASS", color: .red, angle: -10)
                 .opacity(dragOffset.width < 0 ? min(abs(dragOffset.width) / 120, 1) : 0)
