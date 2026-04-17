@@ -36,7 +36,7 @@ struct FeaturedCard: View {
             VStack(alignment: .leading, spacing: 14) {
                 PageDots(count: item.imageURLs.count, activeIndex: currentImageIndex)
                     .frame(maxWidth: .infinity)
-                    .padding(.top, 14)
+                    .padding(.top, 114)
 
                 Spacer()
 
