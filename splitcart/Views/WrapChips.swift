@@ -5,9 +5,9 @@ struct WrapChips: View {
 
     var body: some View {
         LazyVGrid(
-            columns: [GridItem(.adaptive(minimum: 132), spacing: 10, alignment: .leading)],
+            columns: [GridItem(.adaptive(minimum: 102), spacing: 1, alignment: .leading)],
             alignment: .leading,
-            spacing: 10
+            spacing: 1
         ) {
             ForEach(tags) { tag in
                 TagChip(icon: tag.icon, text: tag.text)
@@ -16,4 +16,8 @@ struct WrapChips: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
+}
+
+#Preview {
+    ContentView()
 }

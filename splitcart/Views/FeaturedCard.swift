@@ -20,9 +20,8 @@ struct FeaturedCard: View {
 
                 LinearGradient(
                     colors: [
-                        .clear,
-                        .clear,
-                        .black.opacity(0.24),
+                        .black.opacity(0.40),
+                        .black.opacity(0.40),
                         .black.opacity(0.80),
                         .black.opacity(0.98)
                     ],
@@ -36,15 +35,15 @@ struct FeaturedCard: View {
             VStack(alignment: .leading, spacing: 14) {
                 PageDots(count: item.imageURLs.count, activeIndex: currentImageIndex)
                     .frame(maxWidth: .infinity)
-                    .padding(.top, 114)
+                    .padding(.top, 14)
 
                 Spacer()
 
                 VStack(alignment: .leading, spacing: 10) {
-                    Text(item.restaurant.uppercased())
+                    Text(item.restaurant)
                         .font(.system(size: 12, weight: .bold, design: .rounded))
                         .foregroundStyle(.white.opacity(0.76))
-                        .tracking(1.6)
+                        .tracking(1.0)
 
                     Text(item.name)
                         .font(.system(size: 27, weight: .heavy, design: .rounded))
@@ -105,16 +104,6 @@ struct FeaturedCard: View {
                 .opacity(dragOffset.width > 0 ? min(abs(dragOffset.width) / 120, 1) : 0)
                 .padding(.trailing, 24)
                 .padding(.top, 66)
-        }
-        .overlay(alignment: .bottomTrailing) {
-            CircleIconButton(
-                systemName: isSaved ? "bookmark.fill" : "bookmark",
-                size: 42,
-                background: .black.opacity(0.38)
-            )
-                .padding(.trailing, 14)
-                .padding(.bottom, 200)
-                .onTapGesture(perform: onToggleSave)
         }
         .overlay {
             HStack(spacing: 0) {

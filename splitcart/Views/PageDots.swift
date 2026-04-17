@@ -14,3 +14,7 @@ struct PageDots: View {
         }
     }
 }
+
+#Preview {
+    ContentView()
+}
