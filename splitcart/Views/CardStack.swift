@@ -34,7 +34,7 @@ struct CardStack: View {
                 )
                 .frame(
                     width: cardWidth,
-                    height: cardHeight
+                    height: cardHeight+67
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .offset(x: dragOffset.width)

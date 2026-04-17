@@ -6,24 +6,22 @@ struct TagChip: View, Identifiable {
     let text: String
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 6) {
             Image(systemName: icon)
-                .font(.system(size: 10, weight: .semibold))
+                .font(.system(size: 9, weight: .semibold))
             Text(text)
-                .font(.system(size: 12, weight: .semibold))
+                .font(.system(size: 11, weight: .semibold))
         }
-        .foregroundStyle(.white.opacity(0.96))
+        .foregroundStyle(.white.opacity(0.92))
         .padding(.horizontal, 10)
-        .padding(.vertical, 4)
-        .background(
+        .padding(.vertical, 5)
+        .background(.ultraThinMaterial, in: Capsule())
+        .overlay {
             Capsule()
-                .fill(.black.opacity(0.55))
-                .overlay {
-                    Capsule().stroke(.white.opacity(0.08), lineWidth: 1)
-                }
-        )
+                .stroke(.white.opacity(0.12), lineWidth: 0.75)
+        }
+        .shadow(color: .black.opacity(0.12), radius: 6, x: 0, y: 2)
         .lineLimit(1)
-        .minimumScaleFactor(0.82)
     }
 }
 

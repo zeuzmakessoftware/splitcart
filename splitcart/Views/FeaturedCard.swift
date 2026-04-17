@@ -46,12 +46,12 @@ struct FeaturedCard: View {
                         .tracking(1.0)
 
                     Text(item.name)
-                        .font(.system(size: 27, weight: .heavy, design: .rounded))
+                        .font(.system(size: 40, weight: .heavy))
                         .foregroundStyle(.white)
                         .shadow(color: .black.opacity(0.35), radius: 8, x: 0, y: 3)
                         .lineLimit(2)
 
-                    HStack(spacing: 8) {
+                    /* HStack(spacing: 8) {
                         Image(systemName: "basket.fill")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(.white.opacity(0.88))
@@ -61,7 +61,7 @@ struct FeaturedCard: View {
                             .foregroundStyle(.white.opacity(0.92))
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
-                    }
+                    } */
 
                     Text(item.detail)
                         .font(.system(size: 15, weight: .medium))
@@ -87,16 +87,16 @@ struct FeaturedCard: View {
                     onSave: onToggleSave,
                     isSaved: isSaved
                 )
-                    .padding(.horizontal, 18)
-                    .padding(.top, 2)
-                    .padding(.bottom, 16)
+                    .padding(.horizontal, 40)
+                    .padding(.bottom, 30)
+
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .overlay(alignment: .topLeading) {
             swipeBadge(text: "PASS", color: .red, angle: -10)
                 .opacity(dragOffset.width < 0 ? min(abs(dragOffset.width) / 120, 1) : 0)
-                .padding(.leading, 24)
+                .padding(.leading, 204)
                 .padding(.top, 66)
         }
         .overlay(alignment: .topTrailing) {
@@ -125,7 +125,7 @@ struct FeaturedCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 34, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 34, style: .continuous)
-                .stroke(.white.opacity(0.08), lineWidth: 1)
+                .stroke(.white.opacity(0.1), lineWidth: 2)
         }
         .shadow(color: .black.opacity(0.55), radius: 20, x: 0, y: 18)
     }
