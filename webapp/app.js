@@ -390,15 +390,33 @@ function undoLastSwipe() {
 }
 
 const $btnHeaderSplit = document.getElementById('btnIntelligentSplit');
-const $resultsOverlay = document.getElementById('resultsOverlay');
-const $resultsContent = document.getElementById('resultsContent');
-const $btnCloseResults = document.getElementById('btnCloseResults');
+const $curationView = document.getElementById('curationView');
+const $splitView = document.getElementById('splitView');
+const $splitContainer = document.getElementById('splitResultsContainer');
+const $appTitle = document.querySelector('.app-title');
 
-// ── Intelligent Splitting ──────────────────────────────────
-$btnHeaderSplit.addEventListener('click', async () => {
+// ── Navigation ──────────────────────────────────────────────
+$btnHeaderSplit.addEventListener('click', () => {
+  showSplitView();
+});
+
+$appTitle.addEventListener('click', () => {
+  showCurationView();
+});
+
+function showCurationView() {
+  $curationView.style.display = 'block';
+  $splitView.style.display = 'none';
+  $appTitle.style.cursor = 'default';
+}
+
+async function showSplitView() {
   if (state.items.length === 0) return;
 
-  $btnHeaderSplit.innerHTML = '<span>⏳</span>';
+  $curationView.style.display = 'none';
+  $splitView.style.display = 'block';
+  $appTitle.style.cursor = 'pointer';
+  $splitContainer.innerHTML = '<div class="loading-results">✦ Analyzing individual profiles...</div>';
 
   try {
     const response = await fetch('http://localhost:5001/split', {
@@ -409,20 +427,13 @@ $btnHeaderSplit.addEventListener('click', async () => {
     const data = await response.json();
     if (data.error) throw new Error(data.error);
 
-    renderSplitResults(data);
-    $resultsOverlay.classList.add('active');
+    renderPremiumSplitReport(data);
   } catch (err) {
-    alert('Split failed: ' + err.message);
-  } finally {
-    $btnHeaderSplit.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93"/></svg>';
+    $splitContainer.innerHTML = `<div class="error-results">Failed to split: ${err.message}</div>`;
   }
-});
+}
 
-$btnCloseResults.addEventListener('click', () => {
-  $resultsOverlay.classList.remove('active');
-});
-
-function renderSplitResults(data) {
+function renderPremiumSplitReport(data) {
   const { assignment, summary } = data;
   let html = '';
 
@@ -436,24 +447,30 @@ function renderSplitResults(data) {
   for (const [user, items] of Object.entries(groups)) {
     const total = summary[user].toFixed(2);
     html += `
-      <div class="result-group">
-        <div class="group-label">
-          <span>${user === 'eva' ? 'Eva' : user === 'john' ? 'John' : 'Shared'}</span>
-          <span>$${total}</span>
+      <div class="result-group-card">
+        <div class="group-header">
+          <span class="group-user">${user === 'eva' ? 'Eva' : user === 'john' ? 'John' : 'Shared'}</span>
+          <span class="group-total">$${total}</span>
         </div>
-        ${items.map(item => `
-          <div class="result-item">
-            <span class="item-name">${item.item_name}</span>
-            <span class="item-price">${item.price}</span>
-          </div>
-        `).join('')}
+        <div class="group-items">
+          ${items.map(item => `
+            <div class="item-row">
+              <div class="item-info">
+                <span class="item-label">${item.item_name}</span>
+                <span class="item-sub">Based on your training profile</span>
+              </div>
+              <span class="item-cost">${item.price}</span>
+            </div>
+          `).join('')}
+        </div>
       </div>
     `;
   }
 
-  $resultsContent.innerHTML = html;
+  $splitContainer.innerHTML = html;
 }
 
+// Update handle_upload to show the split button
 function updateStats() {
   const avail = availableItems();
   const remaining = avail.length;
@@ -469,7 +486,11 @@ function updateStats() {
   setBadge($badgeSaved, saved);
   setBadge($badgePass, passed);
 
-  $btnHeaderSplit.style.display = (state.items.length > 0) ? 'flex' : 'none';
+  if (state.items.length > 0) {
+    $btnHeaderSplit.style.display = 'flex';
+  } else {
+    $btnHeaderSplit.style.display = 'none';
+  }
 }
 
 init();

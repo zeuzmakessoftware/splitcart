@@ -64,71 +64,65 @@
         <div class="stat-pill"><span class="stat-val" id="remainingCountTop">0</span><span
             class="stat-label">LEFT</span></div>
       </div>
-
-      <div class="category-scroll" id="categoryScroll">
-        <!-- injected by JS -->
-      </div>
     </header>
 
-    <!-- Card Area -->
-    <main class="card-area" id="cardArea">
-      <div class="card-stack-wrapper" id="cardStackWrapper">
-        <!-- Card injected by JS -->
+    <main id="curationView">
+      <div class="category-scroll" id="categoryScroll"></div>
+
+      <div class="card-area" id="cardArea">
+        <div class="card-stack-wrapper" id="cardStackWrapper">
+          <div class="empty-state">
+            <div class="empty-state__icon">✦</div>
+            <div class="empty-state__title">Welcome to Splitcart</div>
+            <div class="empty-state__sub">Upload a receipt to start your premium shopping experience.</div>
+          </div>
+        </div>
       </div>
+
+      <nav class="bottom-nav" id="bottomNav">
+        <div class="bottom-nav-item selected" id="nav-swipe">
+          <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M9 11V6a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0zm7.18 3.2A2 2 0 0 1 18 16v1a5 5 0 0 1-10 0v-2.5L6 12.5V9a1 1 0 0 1 2 0v4l3 1.5V6a1 1 0 0 1 2 0v5.5l3 2.7z" />
+            </svg></div>
+          <span class="nav-label">Swipe</span>
+          <span class="nav-badge" id="badge-swipe">0</span>
+        </div>
+        <div class="bottom-nav-item" id="nav-likes">
+          <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5A5.5 5.5 0 0 1 7.5 3c1.74 0 3.41.81 4.5 2.09A5.99 5.99 0 0 1 16.5 3 5.5 5.5 0 0 1 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg></div>
+          <span class="nav-label">Likes</span>
+          <span class="nav-badge hidden" id="badge-likes">0</span>
+        </div>
+        <div class="bottom-nav-item" id="nav-saved">
+          <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17 3H7a2 2 0 0 0-2 2v16l7-3 7 3V5a2 2 0 0 0-2-2z" />
+            </svg></div>
+          <span class="nav-label">Saved</span>
+          <span class="nav-badge hidden" id="badge-saved">0</span>
+        </div>
+        <div class="bottom-nav-item" id="nav-pass">
+          <div class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 19L19 6M6 6l13 13" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                fill="none" />
+            </svg></div>
+          <span class="nav-label">Pass</span>
+          <span class="nav-badge hidden" id="badge-pass">0</span>
+        </div>
+      </nav>
     </main>
 
-    <!-- Bottom Nav -->
-    <nav class="bottom-nav" id="bottomNav">
-      <div class="bottom-nav-item selected" id="nav-swipe">
-        <div class="nav-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M9 11V6a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0zm7.18 3.2A2 2 0 0 1 18 16v1a5 5 0 0 1-10 0v-2.5L6 12.5V9a1 1 0 0 1 2 0v4l3 1.5V6a1 1 0 0 1 2 0v5.5l3 2.7z" />
-          </svg>
-        </div>
-        <span class="nav-label">Swipe</span>
-        <span class="nav-badge" id="badge-swipe">0</span>
+    <main id="splitView" style="display: none;">
+      <div class="split-view-header">
+        <h1>Intelligent Split</h1>
+        <p>Divided based on your learned profiles.</p>
       </div>
-      <div class="bottom-nav-item" id="nav-likes">
-        <div class="nav-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5A5.5 5.5 0 0 1 7.5 3c1.74 0 3.41.81 4.5 2.09A5.99 5.99 0 0 1 16.5 3 5.5 5.5 0 0 1 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-          </svg>
-        </div>
-        <span class="nav-label">Likes</span>
-        <span class="nav-badge hidden" id="badge-likes">0</span>
-      </div>
-      <div class="bottom-nav-item" id="nav-saved">
-        <div class="nav-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17 3H7a2 2 0 0 0-2 2v16l7-3 7 3V5a2 2 0 0 0-2-2z" />
-          </svg>
-        </div>
-        <span class="nav-label">Saved</span>
-        <span class="nav-badge hidden" id="badge-saved">0</span>
-      </div>
-      <div class="bottom-nav-item" id="nav-pass">
-        <div class="nav-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M6 19L19 6M6 6l13 13" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-              fill="none" />
-          </svg>
-        </div>
-        <span class="nav-label">Pass</span>
-        <span class="nav-badge hidden" id="badge-pass">0</span>
-      </div>
-    </nav>
-
-    <div class="results-overlay" id="resultsOverlay">
-      <div class="results-header">
-        <h2 class="results-title">Intelligent Split</h2>
-        <div class="results-close" id="btnCloseResults">✕</div>
-      </div>
-      <div class="results-scroll" id="resultsContent">
+      <div class="split-results-container" id="splitResultsContainer">
         <!-- Injected by JS -->
       </div>
-    </div>
+    </main>
   </div> <!-- end app-shell -->
 
   <script src="app.js"></script>
