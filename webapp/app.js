@@ -110,6 +110,12 @@ function updateStats() {
   setBadge($badgeLikes, liked);
   setBadge($badgeSaved, saved);
   setBadge($badgePass, passed);
+
+  // Show split button if we have items
+  const $btnHeaderSplit = document.getElementById('btnIntelligentSplit');
+  if (state.items.length > 0 && $btnHeaderSplit) {
+    $btnHeaderSplit.style.display = 'flex';
+  }
 }
 
 function setBadge(el, count) {
@@ -174,7 +180,6 @@ $receiptInput.addEventListener('change', async (e) => {
 
     renderCard();
     updateStats();
-    $splitBar.style.display = 'flex'; // Show split trigger
   } catch (err) {
     console.error(err);
     $wrapper.innerHTML = `
@@ -384,18 +389,16 @@ function undoLastSwipe() {
   updateStats();
 }
 
-const $splitBar = document.getElementById('splitTriggerBar');
-const $btnSplit = document.getElementById('btnSplitNow');
+const $btnHeaderSplit = document.getElementById('btnIntelligentSplit');
 const $resultsOverlay = document.getElementById('resultsOverlay');
 const $resultsContent = document.getElementById('resultsContent');
 const $btnCloseResults = document.getElementById('btnCloseResults');
 
 // ── Intelligent Splitting ──────────────────────────────────
-$btnSplit.addEventListener('click', async () => {
+$btnHeaderSplit.addEventListener('click', async () => {
   if (state.items.length === 0) return;
 
-  $btnSplit.disabled = true;
-  $btnSplit.innerHTML = '<span>⏳</span> Analyzing Profiles...';
+  $btnHeaderSplit.innerHTML = '<span>⏳</span>';
 
   try {
     const response = await fetch('http://localhost:5001/split', {
@@ -411,8 +414,7 @@ $btnSplit.addEventListener('click', async () => {
   } catch (err) {
     alert('Split failed: ' + err.message);
   } finally {
-    $btnSplit.disabled = false;
-    $btnSplit.innerHTML = '<span>✦</span> Intelligent Split';
+    $btnHeaderSplit.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93"/></svg>';
   }
 });
 
@@ -452,9 +454,22 @@ function renderSplitResults(data) {
   $resultsContent.innerHTML = html;
 }
 
-// Update handle_upload to show the split bar
-const originalUploadHandler = $receiptInput.onchange; // (we used addEventListener earlier)
-// Let's just update the existing listener block in app.js (already done in my head, I'll apply it now)
+function updateStats() {
+  const avail = availableItems();
+  const remaining = avail.length;
+  const liked = likedCount();
+  const saved = state.savedIds.size;
+  const passed = state.passedIds.size;
 
-// ... existing code ...
+  $likedTop.textContent = liked;
+  $remainTop.textContent = remaining;
+
+  $badgeSwipe.textContent = remaining;
+  setBadge($badgeLikes, liked);
+  setBadge($badgeSaved, saved);
+  setBadge($badgePass, passed);
+
+  $btnHeaderSplit.style.display = (state.items.length > 0) ? 'flex' : 'none';
+}
+
 init();

@@ -154,40 +154,7 @@ body {
   border-color: rgba(0, 0, 0, 0.2);
 }
 
-/* ── Split Trigger ───────────────────────────────────────── */
-.split-trigger-bar {
-  padding: 0 24px 16px;
-  display: flex;
-  justify-content: center;
-}
-
-.split-btn {
-  width: 100%;
-  padding: 14px;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 16px;
-  font-family: var(--font-sans);
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-.split-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-}
-
-.split-btn span {
-  font-size: 18px;
-}
+/* (Old split-trigger-bar removed) */
 
 /* ── Results Modal ───────────────────────────────────────── */
 .results-overlay {
