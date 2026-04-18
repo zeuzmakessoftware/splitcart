@@ -85,7 +85,3 @@ private struct WrappingHStack: Layout {
         }
     }
 }
-
-#Preview {
-    ContentView()
-}

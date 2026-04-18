@@ -24,7 +24,3 @@ struct TagChip: View, Identifiable {
         .lineLimit(1)
     }
 }
-
-#Preview {
-    ContentView()
-}

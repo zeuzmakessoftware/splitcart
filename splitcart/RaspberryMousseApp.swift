@@ -8,3 +8,7 @@ struct RaspberryMousseApp: App {
         }
     }
 }
+
+#Preview {
+    ContentView()
+}

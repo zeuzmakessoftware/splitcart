@@ -145,7 +145,3 @@ struct FeaturedCard: View {
             .rotationEffect(.degrees(angle))
     }
 }
-
-#Preview {
-    ContentView()
-}

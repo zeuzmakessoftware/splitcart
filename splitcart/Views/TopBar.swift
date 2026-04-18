@@ -76,7 +76,3 @@ struct TopBar: View {
         )
     }
 }
-
-#Preview {
-    ContentView()
-}

@@ -52,6 +52,7 @@ struct SwipeScreen: View {
     @State private var savedItemIDs: Set<FoodSwipeItem.ID> = []
     @State private var imageIndexes: [FoodSwipeItem.ID: Int] = [:]
     @State private var history: [SwipeHistoryEntry] = []
+    @State private var isShowingReceiptFlow = false
 
     private let items = FoodSwipeItem.sampleData
 
@@ -68,6 +69,14 @@ struct SwipeScreen: View {
 
     private var likedCount: Int {
         likedItemIDs.count + lovedItemIDs.count
+    }
+
+    private var swipeBias: SwipePreferenceBias {
+        SwipePreferenceBias.from(history: history, items: items)
+    }
+
+    private var demoCrew: [ReceiptFriendProfile] {
+        ReceiptFriendProfile.demoCrew(adjustedBy: swipeBias)
     }
 
     var body: some View {
@@ -102,12 +111,23 @@ struct SwipeScreen: View {
                         remainingCount: remainingCount,
                         likedCount: likedCount,
                         savedCount: savedItemIDs.count,
-                        passedCount: passedItemIDs.count
+                        passedCount: passedItemIDs.count,
+                        onScanTap: {
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.86)) {
+                                isShowingReceiptFlow = true
+                            }
+                        }
                     )
                     .padding(.horizontal, 18)
                     .padding(.bottom, 10)
                 }
             }
+        }
+        .fullScreenCover(isPresented: $isShowingReceiptFlow) {
+            ReceiptSplitFlowView(
+                groupBias: swipeBias,
+                friends: demoCrew
+            )
         }
     }
 

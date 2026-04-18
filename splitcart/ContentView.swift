@@ -9,7 +9,3 @@ struct ContentView: View {
         .preferredColorScheme(.dark)
     }
 }
-
-#Preview {
-    ContentView()
-}
