@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Splitcart — Swipe Your Groceries</title>
+  <meta name="description"
+    content="Swipe through grocery items to train your personal shopping recommendation model." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display:ital@0;1&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <!-- Background -->
+  <div class="bg-layer">
+    <div class="bg-glow bg-glow--orange"></div>
+    <div class="bg-glow bg-glow--pink"></div>
+  </div>
+
+  <!-- App Shell (phone-like container) -->
+  <div class="app-shell" id="appShell">
+
+    <!-- Top Bar -->
+    <header class="top-bar" id="topBar">
+      <div class="top-bar__row">
+        <button class="icon-btn" id="filterBtn" aria-label="Filters">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="6" x2="20" y2="6" />
+            <line x1="8" y1="12" x2="16" y2="12" />
+            <line x1="11" y1="18" x2="13" y2="18" />
+          </svg>
+        </button>
+        <span class="app-title">Splitcart</span>
+        <div class="stat-pills">
+          <div class="stat-pill"><span class="stat-val" id="likedCountTop">0</span><span class="stat-label">LIKES</span>
+          </div>
+          <div class="stat-pill"><span class="stat-val" id="remainingCountTop">0</span><span
+              class="stat-label">LEFT</span></div>
+        </div>
+      </div>
+      <div class="category-scroll" id="categoryScroll">
+        <!-- injected by JS -->
+      </div>
+    </header>
+
+    <!-- Card Area -->
+    <main class="card-area" id="cardArea">
+      <div class="card-stack-wrapper" id="cardStackWrapper">
+        <!-- Card injected by JS -->
+      </div>
+    </main>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav" id="bottomNav">
+      <div class="bottom-nav-item selected" id="nav-swipe">
+        <div class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M9 11V6a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0zm7.18 3.2A2 2 0 0 1 18 16v1a5 5 0 0 1-10 0v-2.5L6 12.5V9a1 1 0 0 1 2 0v4l3 1.5V6a1 1 0 0 1 2 0v5.5l3 2.7z" />
+          </svg>
+        </div>
+        <span class="nav-label">Swipe</span>
+        <span class="nav-badge" id="badge-swipe">0</span>
+      </div>
+      <div class="bottom-nav-item" id="nav-likes">
+        <div class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5A5.5 5.5 0 0 1 7.5 3c1.74 0 3.41.81 4.5 2.09A5.99 5.99 0 0 1 16.5 3 5.5 5.5 0 0 1 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg>
+        </div>
+        <span class="nav-label">Likes</span>
+        <span class="nav-badge hidden" id="badge-likes">0</span>
+      </div>
+      <div class="bottom-nav-item" id="nav-saved">
+        <div class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17 3H7a2 2 0 0 0-2 2v16l7-3 7 3V5a2 2 0 0 0-2-2z" />
+          </svg>
+        </div>
+        <span class="nav-label">Saved</span>
+        <span class="nav-badge hidden" id="badge-saved">0</span>
+      </div>
+      <div class="bottom-nav-item" id="nav-pass">
+        <div class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 19L19 6M6 6l13 13" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+              fill="none" />
+          </svg>
+        </div>
+        <span class="nav-label">Pass</span>
+        <span class="nav-badge hidden" id="badge-pass">0</span>
+      </div>
+    </nav>
+
+  </div><!-- /.app-shell -->
+
+  <script src="app.js"></script>
+</body>
+
+</html>
