@@ -174,7 +174,7 @@ $receiptInput.addEventListener('change', async (e) => {
 
     renderCard();
     updateStats();
-    $splitBar.style.display = 'flex'; // Show split trigger
+    $navSplitBtn.style.display = 'flex'; // Show navigation entry
   } catch (err) {
     console.error(err);
     $wrapper.innerHTML = `
@@ -384,18 +384,35 @@ function undoLastSwipe() {
   updateStats();
 }
 
-const $splitBar = document.getElementById('splitTriggerBar');
-const $btnSplit = document.getElementById('btnSplitNow');
-const $resultsOverlay = document.getElementById('resultsOverlay');
-const $resultsContent = document.getElementById('resultsContent');
-const $btnCloseResults = document.getElementById('btnCloseResults');
+const $navSplitBtn = document.getElementById('navSplitBtn');
+const $curationView = document.getElementById('curationView');
+const $splitView = document.getElementById('splitView');
+const $splitContainer = document.getElementById('splitResultsContainer');
+const $appTitle = document.getElementById('appTitle');
 
-// ── Intelligent Splitting ──────────────────────────────────
-$btnSplit.addEventListener('click', async () => {
+// ── Navigation ──────────────────────────────────────────────
+$navSplitBtn.addEventListener('click', () => {
+  showSplitView();
+});
+
+$appTitle.addEventListener('click', () => {
+  showCurationView();
+});
+
+function showCurationView() {
+  $curationView.style.display = 'block';
+  $splitView.style.display = 'none';
+  $appTitle.style.cursor = 'default';
+}
+
+async function showSplitView() {
+  $curationView.style.display = 'none';
+  $splitView.style.display = 'block';
+  $appTitle.style.cursor = 'pointer';
+
   if (state.items.length === 0) return;
 
-  $btnSplit.disabled = true;
-  $btnSplit.innerHTML = '<span>⏳</span> Analyzing Profiles...';
+  $splitContainer.innerHTML = '<div class="loading-results">✦ Analyzing individual profiles...</div>';
 
   try {
     const response = await fetch('http://localhost:5001/split', {
@@ -406,21 +423,13 @@ $btnSplit.addEventListener('click', async () => {
     const data = await response.json();
     if (data.error) throw new Error(data.error);
 
-    renderSplitResults(data);
-    $resultsOverlay.classList.add('active');
+    renderPremiumSplitReport(data);
   } catch (err) {
-    alert('Split failed: ' + err.message);
-  } finally {
-    $btnSplit.disabled = false;
-    $btnSplit.innerHTML = '<span>✦</span> Intelligent Split';
+    $splitContainer.innerHTML = `<div class="error-results">Failed to split: ${err.message}</div>`;
   }
-});
+}
 
-$btnCloseResults.addEventListener('click', () => {
-  $resultsOverlay.classList.remove('active');
-});
-
-function renderSplitResults(data) {
+function renderPremiumSplitReport(data) {
   const { assignment, summary } = data;
   let html = '';
 
@@ -434,27 +443,30 @@ function renderSplitResults(data) {
   for (const [user, items] of Object.entries(groups)) {
     const total = summary[user].toFixed(2);
     html += `
-      <div class="result-group">
-        <div class="group-label">
-          <span>${user === 'eva' ? 'Eva' : user === 'john' ? 'John' : 'Shared'}</span>
-          <span>$${total}</span>
+      <div class="result-group-card">
+        <div class="group-header">
+          <span class="group-user">${user === 'eva' ? 'Eva' : user === 'john' ? 'John' : 'Shared'}</span>
+          <span class="group-total">$${total}</span>
         </div>
-        ${items.map(item => `
-          <div class="result-item">
-            <span class="item-name">${item.item_name}</span>
-            <span class="item-price">${item.price}</span>
-          </div>
-        `).join('')}
+        <div class="group-items">
+          ${items.map(item => `
+            <div class="item-row">
+              <div class="item-info">
+                <span class="item-label">${item.item_name}</span>
+                <span class="item-sub">Based on your training profile</span>
+              </div>
+              <span class="item-cost">${item.price}</span>
+            </div>
+          `).join('')}
+        </div>
       </div>
     `;
   }
 
-  $resultsContent.innerHTML = html;
+  $splitContainer.innerHTML = html;
 }
 
-// Update handle_upload to show the split bar
-const originalUploadHandler = $receiptInput.onchange; // (we used addEventListener earlier)
-// Let's just update the existing listener block in app.js (already done in my head, I'll apply it now)
+// Update the upload success to show nav icon
+// (Inside handleReceipt will be updated in next step or combined)
 
-// ... existing code ...
 init();
