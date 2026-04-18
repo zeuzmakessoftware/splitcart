@@ -154,113 +154,120 @@ body {
   border-color: rgba(0, 0, 0, 0.2);
 }
 
-/* ── Header Refinements ──────────────────────────────────── */
-.left-actions {
+/* ── Split Trigger ───────────────────────────────────────── */
+.split-trigger-bar {
+  padding: 0 24px 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.split-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-/* ── Split View (Premium Report) ─────────────────────────── */
-#splitView {
-  padding: 48px 24px 120px;
-  max-width: 600px;
-  margin: 0 auto;
-  animation: fadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+.split-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
 }
 
-.split-view-header {
-  margin-bottom: 56px;
-  text-align: center;
+.split-btn span {
+  font-size: 18px;
 }
 
-.split-view-header h1 {
+/* ── Results Modal ───────────────────────────────────────── */
+.results-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(253, 253, 251, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  padding: 64px 24px 32px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+
+.results-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.results-header {
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.results-title {
   font-family: var(--font-serif);
-  font-size: 42px;
+  font-size: 32px;
   color: var(--accent);
-  margin-bottom: 12px;
 }
 
-.split-view-header p {
-  font-size: 15px;
+.results-close {
+  font-size: 24px;
+  cursor: pointer;
   color: var(--text-tertiary);
 }
 
-.split-results-container {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
+.results-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
 }
 
-.result-group-card {
-  background: var(--surface);
-  border-radius: 32px;
-  padding: 32px;
-  margin-bottom: 32px;
-  box-shadow: var(--shadow-float);
-  border: 1px solid rgba(0, 0, 0, 0.02);
+.result-group {
+  margin-bottom: 24px;
 }
 
-.group-header {
+.group-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-soft);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
 }
 
-.group-user {
-  font-family: var(--font-serif);
-  font-size: 28px;
-  color: var(--accent);
-}
-
-.group-total {
-  font-weight: 800;
-  font-size: 20px;
-  color: var(--accent);
-}
-
-.item-row {
+.result-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.02);
 }
 
-.item-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.item-label {
+.item-name {
   font-size: 15px;
-  font-weight: 500;
   color: var(--text-primary);
 }
 
-.item-sub {
-  font-size: 12px;
-  color: var(--text-tertiary);
-}
-
-.item-cost {
+.item-price {
+  font-size: 15px;
   font-weight: 600;
-  color: var(--accent-soft);
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  color: var(--accent);
 }
 
 /* Category pills */
