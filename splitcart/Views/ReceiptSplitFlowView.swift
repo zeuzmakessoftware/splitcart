@@ -152,18 +152,6 @@ struct ReceiptSplitFlowView: View {
 
     private var introView: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Image("receiptflow2")
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: .infinity)
-                .frame(height: 300)
-                .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 30, style: .continuous)
-                        .stroke(.white.opacity(0.1), lineWidth: 1)
-                }
-                .shadow(color: .black.opacity(0.35), radius: 24, x: 0, y: 16)
-
             VStack(spacing: 14) {
                 PhotosPicker(selection: $selectedPhoto, matching: .images) {
                     PrimaryReceiptButton(
@@ -177,6 +165,15 @@ struct ReceiptSplitFlowView: View {
             }
             .padding(20)
             .background(panelBackground)
+            
+            Image("receiptflow2")
+                .resizable()
+                .scaledToFit()
+                .frame(maxWidth: .infinity)
+                .frame(height: 300)
+                .clipShape(RoundedRectangle(cornerRadius: 40, style: .continuous))
+                .shadow(color: .black.opacity(0.35), radius: 24, x: 0, y: 16)
+                .contrast(1.1)
         }
     }
 
@@ -782,4 +779,8 @@ private struct MatchedReceiptItemRow: View {
             alignment: .bottom
         )
     }
+}
+
+#Preview {
+    ContentView()
 }
