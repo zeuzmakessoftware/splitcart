@@ -136,6 +136,140 @@ body {
   transform: scale(1.05);
 }
 
+.user-select {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.user-select:hover {
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* ── Split Trigger ───────────────────────────────────────── */
+.split-trigger-bar {
+  padding: 0 24px 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.split-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.split-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.split-btn span {
+  font-size: 18px;
+}
+
+/* ── Results Modal ───────────────────────────────────────── */
+.results-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(253, 253, 251, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  padding: 64px 24px 32px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+
+.results-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.results-header {
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.results-title {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  color: var(--accent);
+}
+
+.results-close {
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-tertiary);
+}
+
+.results-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.result-group {
+  margin-bottom: 24px;
+}
+
+.group-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-soft);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.item-name {
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.item-price {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
 /* Category pills */
 .category-scroll {
   display: flex;

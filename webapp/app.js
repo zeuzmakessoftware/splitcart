@@ -16,10 +16,11 @@ const TAG_ICONS = {
   'Salad Base': '○', 'Everyday Buy': '○',
 };
 
-// ── App State ───────────────────────────────────────────────
+// ── State ────────────────────────────────────────────────────
 const state = {
   selectedCategory: 'All',
-  items: [],              // Populated via API
+  userId: 'eva',         // Default user
+  items: [],              // Now populated by API
   swipedIds: new Set(),
   likedIds: new Set(),
   lovedIds: new Set(),
@@ -31,7 +32,7 @@ const state = {
   isLoading: false,
 };
 
-// ── DOM References ──────────────────────────────────────────
+// ── DOM refs ─────────────────────────────────────────────────
 const $wrapper = document.getElementById('cardStackWrapper');
 const $catScroll = document.getElementById('categoryScroll');
 const $likedTop = document.getElementById('likedCountTop');
@@ -42,6 +43,46 @@ const $badgeSaved = document.getElementById('badge-saved');
 const $badgePass = document.getElementById('badge-pass');
 const $uploadBtn = document.getElementById('uploadBtn');
 const $receiptInput = document.getElementById('receiptInput');
+const $userSelect = document.getElementById('userSelect');
+
+// ── User Selection ───────────────────────────────────────────
+$userSelect.addEventListener('change', (e) => {
+  state.userId = e.target.value;
+  // Reset session stats when switching users for training
+  state.swipedIds.clear();
+  state.likedIds.clear();
+  state.lovedIds.clear();
+  state.passedIds.clear();
+  state.history = [];
+  renderCard();
+  updateStats();
+});
+
+// ── Feedback Logic (Synced to Backend) ───────────────────────
+async function registerFeedback(feedback, item) {
+  if (state.swipedIds.has(item.id)) return;
+  state.swipedIds.add(item.id);
+  state.history.push({ id: item.id, feedback });
+
+  if (feedback === 'pass') state.passedIds.add(item.id);
+  if (feedback === 'like') state.likedIds.add(item.id);
+  if (feedback === 'love') state.lovedIds.add(item.id);
+
+  // Sync to backend
+  try {
+    await fetch('http://localhost:5001/swipe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: state.userId,
+        item: item,
+        feedback: feedback
+      })
+    });
+  } catch (err) {
+    console.warn('Failed to sync swipe to backend:', err);
+  }
+}
 
 // ── Helper Functions ────────────────────────────────────────
 function availableItems() {
@@ -133,6 +174,7 @@ $receiptInput.addEventListener('change', async (e) => {
 
     renderCard();
     updateStats();
+    $splitBar.style.display = 'flex'; // Show split trigger
   } catch (err) {
     console.error(err);
     $wrapper.innerHTML = `
@@ -342,10 +384,77 @@ function undoLastSwipe() {
   updateStats();
 }
 
-function init() {
-  buildCategories();
-  renderCard();
-  updateStats();
+const $splitBar = document.getElementById('splitTriggerBar');
+const $btnSplit = document.getElementById('btnSplitNow');
+const $resultsOverlay = document.getElementById('resultsOverlay');
+const $resultsContent = document.getElementById('resultsContent');
+const $btnCloseResults = document.getElementById('btnCloseResults');
+
+// ── Intelligent Splitting ──────────────────────────────────
+$btnSplit.addEventListener('click', async () => {
+  if (state.items.length === 0) return;
+
+  $btnSplit.disabled = true;
+  $btnSplit.innerHTML = '<span>⏳</span> Analyzing Profiles...';
+
+  try {
+    const response = await fetch('http://localhost:5001/split', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: state.items })
+    });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error);
+
+    renderSplitResults(data);
+    $resultsOverlay.classList.add('active');
+  } catch (err) {
+    alert('Split failed: ' + err.message);
+  } finally {
+    $btnSplit.disabled = false;
+    $btnSplit.innerHTML = '<span>✦</span> Intelligent Split';
+  }
+});
+
+$btnCloseResults.addEventListener('click', () => {
+  $resultsOverlay.classList.remove('active');
+});
+
+function renderSplitResults(data) {
+  const { assignment, summary } = data;
+  let html = '';
+
+  // Group by assigned_to
+  const groups = {};
+  assignment.forEach(a => {
+    if (!groups[a.assigned_to]) groups[a.assigned_to] = [];
+    groups[a.assigned_to].push(a);
+  });
+
+  for (const [user, items] of Object.entries(groups)) {
+    const total = summary[user].toFixed(2);
+    html += `
+      <div class="result-group">
+        <div class="group-label">
+          <span>${user === 'eva' ? 'Eva' : user === 'john' ? 'John' : 'Shared'}</span>
+          <span>$${total}</span>
+        </div>
+        ${items.map(item => `
+          <div class="result-item">
+            <span class="item-name">${item.item_name}</span>
+            <span class="item-price">${item.price}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  $resultsContent.innerHTML = html;
 }
 
+// Update handle_upload to show the split bar
+const originalUploadHandler = $receiptInput.onchange; // (we used addEventListener earlier)
+// Let's just update the existing listener block in app.js (already done in my head, I'll apply it now)
+
+// ... existing code ...
 init();

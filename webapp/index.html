@@ -45,6 +45,10 @@
             <line x1="12" y1="3" x2="12" y2="15" />
           </svg>
         </button>
+        <select class="user-select" id="userSelect">
+          <option value="eva">Eva</option>
+          <option value="john">John</option>
+        </select>
         <input type="file" id="receiptInput" accept="image/*" style="display: none;" />
         <span class="app-title">Splitcart</span>
         <div class="stat-pills">
@@ -54,6 +58,13 @@
               class="stat-label">LEFT</span></div>
         </div>
       </div>
+
+      <div class="split-trigger-bar" id="splitTriggerBar" style="display: none;">
+        <button class="split-btn" id="btnSplitNow">
+          <span>✦</span> Intelligent Split
+        </button>
+      </div>
+
       <div class="category-scroll" id="categoryScroll">
         <!-- injected by JS -->
       </div>
@@ -109,7 +120,16 @@
       </div>
     </nav>
 
-  </div><!-- /.app-shell -->
+    <div class="results-overlay" id="resultsOverlay">
+      <div class="results-header">
+        <h2 class="results-title">Intelligent Split</h2>
+        <div class="results-close" id="btnCloseResults">✕</div>
+      </div>
+      <div class="results-scroll" id="resultsContent">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+  </div> <!-- end app-shell -->
 
   <script src="app.js"></script>
 </body>

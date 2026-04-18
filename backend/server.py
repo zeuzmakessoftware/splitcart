@@ -56,6 +56,105 @@ ENRICHED_SCHEMA = {
     "required": ["store", "items"]
 }
 
+# Simple persistence for user profiles
+PROFILES_FILE = Path(__file__).parent / "profiles.json"
+
+def load_profiles():
+    if not PROFILES_FILE.exists():
+        return {"users": {}}
+    with open(PROFILES_FILE, "r") as f:
+        return json.load(f)
+
+def save_profiles(profiles):
+    with open(PROFILES_FILE, "w") as f:
+        json.dump(profiles, f, indent=2)
+
+@app.route('/profiles', methods=['GET'])
+def get_profiles():
+    return jsonify(load_profiles())
+
+@app.route('/swipe', methods=['POST'])
+def save_swipe():
+    data = request.json
+    user_id = data.get("user_id", "default")
+    item = data.get("item")
+    feedback = data.get("feedback")
+    
+    if not item or not feedback:
+        return jsonify({"error": "Missing item or feedback"}), 400
+    
+    profiles = load_profiles()
+    if user_id not in profiles["users"]:
+        profiles["users"][user_id] = {"likes": [], "passes": [], "tags": {}}
+    
+    user = profiles["users"][user_id]
+    if feedback in ["like", "love"]:
+        user["likes"].append(item["name"])
+        # Update tag preferences
+        for tag in item.get("tags", []):
+            user["tags"][tag] = user["tags"].get(tag, 0) + 1
+    else:
+        user["passes"].append(item["name"])
+        for tag in item.get("tags", []):
+            user["tags"][tag] = user["tags"].get(tag, 0) - 1
+            
+    save_profiles(profiles)
+    return jsonify({"status": "success"})
+
+@app.route('/split', methods=['POST'])
+def split_bill():
+    data = request.json
+    items = data.get("items", [])
+    if not items:
+        return jsonify({"error": "No items to split"}), 400
+        
+    profiles = load_profiles()
+    users = profiles.get("users", {})
+    
+    if not users:
+        return jsonify({"error": "No user profiles found. Please train the model first."}), 400
+        
+    assignment = []
+    
+    for item in items:
+        scores = {}
+        item_tags = set(item.get("tags", []))
+        
+        for u_id, u_data in users.items():
+            user_tags = u_data.get("tags", {})
+            # Calculate match score based on common tags
+            score = 0
+            for tag in item_tags:
+                score += user_tags.get(tag, 0)
+                
+            # Bonus for exact name match in previous likes
+            if item["name"] in u_data.get("likes", []):
+                score += 10
+                
+            scores[u_id] = score
+            
+        # Determine winner
+        best_user = max(scores, key=scores.get)
+        confidence = scores[best_user]
+        
+        # If score is too low or tie, mark as shared
+        if confidence <= 0:
+            target = "Shared"
+        else:
+            target = best_user
+            
+        assignment.append({
+            "item_name": item["name"],
+            "price": item["price"],
+            "assigned_to": target,
+            "confidence": confidence
+        })
+        
+    return jsonify({
+        "assignment": assignment,
+        "summary": { u_id: sum(float(a["price"].replace("$","")) for a in assignment if a["assigned_to"] == u_id) for u_id in list(users.keys()) + ["Shared"] }
+    })
+
 @app.route('/upload', methods=['POST'])
 def handle_upload():
     if 'receipt' not in request.files:
@@ -92,6 +191,14 @@ def handle_upload():
         )
         
         data = json.loads(response.text)
+        
+        # Post-process to ensure premium, relevant images
+        for item in data.get("items", []):
+            category = item.get("categories", ["All"])[-1] # Use the most specific category
+            if category in UNSPLASH_MAPPING:
+                # Add the curated image as the primary image
+                item["images"] = [UNSPLASH_MAPPING[category]] + item["images"][:1]
+        
         return jsonify(data)
         
     except Exception as e:
