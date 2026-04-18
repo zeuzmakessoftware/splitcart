@@ -84,56 +84,56 @@ struct SwipeScreen: View {
 
     var body: some View {
         GeometryReader { geo in
-            ZStack {
+            ZStack(alignment: .bottom) {
                 BackgroundLayer()
 
-                VStack(spacing: 18) {
-                    Group {
-                        switch selectedTab {
-                        case .swipe:
-                            swipeTabContent(geo: geo)
-                        case .likes:
-                            collectionTabContent(
-                                title: "Liked Items",
-                                subtitle: "Every right swipe and love lives here.",
-                                items: items.filter { likedItemIDs.contains($0.id) || lovedItemIDs.contains($0.id) }
-                            )
-                        case .saved:
-                            collectionTabContent(
-                                title: "Saved Items",
-                                subtitle: "Shortlist dishes and groceries to revisit.",
-                                items: items.filter { savedItemIDs.contains($0.id) }
-                            )
-                        case .friends:
-                            FriendsView(
-                                friends: demoCrew,
-                                latestReceipt: latestReceiptResponse,
-                                onAddFriend: addFriend
-                            )
+                Group {
+                    switch selectedTab {
+                    case .swipe:
+                        swipeTabContent(geo: geo)
+                    case .likes:
+                        collectionTabContent(
+                            title: "Liked Items",
+                            subtitle: "Every right swipe and love lives here.",
+                            items: items.filter { likedItemIDs.contains($0.id) || lovedItemIDs.contains($0.id) }
+                        )
+                    case .saved:
+                        collectionTabContent(
+                            title: "Saved Items",
+                            subtitle: "Shortlist dishes and groceries to revisit.",
+                            items: items.filter { savedItemIDs.contains($0.id) }
+                        )
+                    case .friends:
+                        FriendsView(
+                            friends: demoCrew,
+                            latestReceipt: latestReceiptResponse,
+                            onAddFriend: addFriend
+                        )
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+
+                BottomNav(
+                    selectedTab: selectedTab,
+                    remainingCount: remainingCount,
+                    likedCount: likedCount,
+                    savedCount: savedItemIDs.count,
+                    friendsCount: latestReceiptResponse?.friends.count ?? demoCrew.count,
+                    onTabSelected: { tab in
+                        withAnimation(.spring(response: 0.36, dampingFraction: 0.88)) {
+                            selectedTab = tab
+                        }
+                    },
+                    onScanTap: {
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.86)) {
+                            isShowingReceiptFlow = true
                         }
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-
-                    BottomNav(
-                        selectedTab: selectedTab,
-                        remainingCount: remainingCount,
-                        likedCount: likedCount,
-                        savedCount: savedItemIDs.count,
-                        friendsCount: latestReceiptResponse?.friends.count ?? demoCrew.count,
-                        onTabSelected: { tab in
-                            withAnimation(.spring(response: 0.36, dampingFraction: 0.88)) {
-                                selectedTab = tab
-                            }
-                        },
-                        onScanTap: {
-                            withAnimation(.spring(response: 0.4, dampingFraction: 0.86)) {
-                                isShowingReceiptFlow = true
-                            }
-                        }
-                    )
-                    .padding(.horizontal, 18)
-                    .padding(.bottom, 10)
-                }
+                )
+                .padding(.horizontal, 18)
+                .padding(.bottom, 10)
+                .frame(maxWidth: .infinity)
+                .zIndex(1)
             }
         }
         .fullScreenCover(isPresented: $isShowingReceiptFlow) {

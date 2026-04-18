@@ -56,7 +56,7 @@ struct BottomNav: View {
             .padding(.bottom, 10)
             .background(
                 RoundedRectangle(cornerRadius: 30, style: .continuous)
-                    .fill(.black.opacity(0.74))
+                    .fill(.black.opacity(0.94))
                     .overlay {
                         RoundedRectangle(cornerRadius: 30, style: .continuous)
                             .stroke(.white.opacity(0.08), lineWidth: 1)
@@ -103,6 +103,7 @@ struct BottomNav: View {
             .offset(y: -16)
         }
         .padding(.top, 12)
+        .frame(height: 118, alignment: .bottom)
         .onAppear {
             withAnimation(.easeOut(duration: 1.8).repeatForever(autoreverses: false)) {
                 pulse = true

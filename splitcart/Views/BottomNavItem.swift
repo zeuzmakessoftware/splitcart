@@ -33,7 +33,7 @@ struct BottomNavItem: View {
                     .minimumScaleFactor(0.8)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 7)
+            .frame(height: 48)
             .background(
                 Group {
                     if selected {
@@ -44,5 +44,6 @@ struct BottomNavItem: View {
             )
         }
         .buttonStyle(.plain)
+        .contentShape(Rectangle())
     }
 }

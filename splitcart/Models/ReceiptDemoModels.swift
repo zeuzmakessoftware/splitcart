@@ -144,10 +144,10 @@ struct ReceiptFriendProfile: Identifiable, Codable, Hashable {
 
     private static let baseCrew: [ReceiptFriendProfile] = [
         ReceiptFriendProfile(
-            id: "maya",
-            name: "Maya",
+            id: "eva",
+            name: "Eva",
             vibe: "Fresh plates and lighter proteins",
-            insight: "The swipe model keeps routing clean proteins, veggie-heavy sides, and lighter mains to Maya.",
+            insight: "The swipe model keeps routing clean proteins, veggie-heavy sides, and lighter mains to Eva.",
             categoryWeights: [
                 "produce": 1.15,
                 "protein": 1.1,
@@ -163,10 +163,10 @@ struct ReceiptFriendProfile: Identifiable, Codable, Hashable {
             shareAffinity: 0.45
         ),
         ReceiptFriendProfile(
-            id: "theo",
-            name: "Theo",
+            id: "idan",
+            name: "Idan",
             vibe: "Savory comfort orders",
-            insight: "Theo absorbs the richer swipe signals: grilled mains, savory sides, and heavy comfort-food tags.",
+            insight: "Idan absorbs the richer swipe signals: grilled mains, savory sides, and heavy comfort-food tags.",
             categoryWeights: [
                 "protein": 1.25,
                 "pantry": 0.95,
@@ -182,10 +182,10 @@ struct ReceiptFriendProfile: Identifiable, Codable, Hashable {
             shareAffinity: 0.6
         ),
         ReceiptFriendProfile(
-            id: "riley",
-            name: "Riley",
+            id: "purnima",
+            name: "Purnima",
             vibe: "Snacks, sweets, and splitables",
-            insight: "Riley gets the snacky side of the graph: desserts, share plates, caffeinated add-ons, and fun extras.",
+            insight: "Purnima gets the snacky side of the graph: desserts, share plates, caffeinated add-ons, and fun extras.",
             categoryWeights: [
                 "snacks": 1.25,
                 "dessert": 1.2,
@@ -201,10 +201,10 @@ struct ReceiptFriendProfile: Identifiable, Codable, Hashable {
             shareAffinity: 1.0
         ),
         ReceiptFriendProfile(
-            id: "nova",
-            name: "Nova",
+            id: "aanya",
+            name: "Aanya",
             vibe: "Plant-forward and flexible",
-            insight: "Nova is the safety valve for produce-heavy, organic, and plant-forward items that do not clearly belong elsewhere.",
+            insight: "Aanya is the safety valve for produce-heavy, organic, and plant-forward items that do not clearly belong elsewhere.",
             categoryWeights: [
                 "produce": 1.0,
                 "organic": 1.1,

@@ -45,7 +45,7 @@ struct CardStack: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .frame(height: cardHeight + 67)
+        .frame(height: cardHeight + 180)
     }
 
     private var emptyState: some View {
