@@ -95,6 +95,31 @@ struct ReceiptFriendProfile: Identifiable, Codable, Hashable {
         }
     }
 
+    static func custom(name: String, vibe: String) -> ReceiptFriendProfile {
+        let normalizedID = SwipePreferenceBias.normalize(name)
+
+        return ReceiptFriendProfile(
+            id: normalizedID,
+            name: name,
+            vibe: vibe,
+            insight: "\(name) was added to the crew and will start with a balanced split profile until more swipes and receipts tune the model.",
+            categoryWeights: [
+                "produce": 0.52,
+                "protein": 0.52,
+                "pantry": 0.52,
+                "shared": 0.58,
+                "snacks": 0.52
+            ],
+            tagWeights: [
+                "shareable": 0.72,
+                "fresh": 0.5,
+                "savory": 0.5,
+                "sweet": 0.5
+            ],
+            shareAffinity: 0.8
+        )
+    }
+
     private func applying(bias: SwipePreferenceBias) -> ReceiptFriendProfile {
         ReceiptFriendProfile(
             id: id,

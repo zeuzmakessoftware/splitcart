@@ -1,10 +1,19 @@
 import SwiftUI
 
+enum BottomTab {
+    case swipe
+    case likes
+    case saved
+    case friends
+}
+
 struct BottomNav: View {
+    let selectedTab: BottomTab
     let remainingCount: Int
     let likedCount: Int
     let savedCount: Int
-    let passedCount: Int
+    let friendsCount: Int
+    let onTabSelected: (BottomTab) -> Void
     let onScanTap: () -> Void
 
     @State private var pulse = false
@@ -12,11 +21,35 @@ struct BottomNav: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             HStack(spacing: 8) {
-                BottomNavItem(icon: "hand.draw.fill", title: "Swipe", selected: true, badge: "\(remainingCount)")
-                BottomNavItem(icon: "heart.fill", title: "Likes", selected: false, badge: likedCount == 0 ? nil : "\(likedCount)")
+                BottomNavItem(
+                    icon: "hand.draw.fill",
+                    title: "Swipe",
+                    selected: selectedTab == .swipe,
+                    badge: "\(remainingCount)",
+                    action: { onTabSelected(.swipe) }
+                )
+                BottomNavItem(
+                    icon: "heart.fill",
+                    title: "Likes",
+                    selected: selectedTab == .likes,
+                    badge: likedCount == 0 ? nil : "\(likedCount)",
+                    action: { onTabSelected(.likes) }
+                )
                 Color.clear.frame(width: 78)
-                BottomNavItem(icon: "bookmark.fill", title: "Saved", selected: false, badge: savedCount == 0 ? nil : "\(savedCount)")
-                BottomNavItem(icon: "xmark.bin.fill", title: "Pass", selected: false, badge: passedCount == 0 ? nil : "\(passedCount)")
+                BottomNavItem(
+                    icon: "bookmark.fill",
+                    title: "Saved",
+                    selected: selectedTab == .saved,
+                    badge: savedCount == 0 ? nil : "\(savedCount)",
+                    action: { onTabSelected(.saved) }
+                )
+                BottomNavItem(
+                    icon: "person.crop.circle",
+                    title: "Friends",
+                    selected: selectedTab == .friends,
+                    badge: friendsCount == 0 ? nil : "\(friendsCount)",
+                    action: { onTabSelected(.friends) }
+                )
             }
             .padding(.horizontal, 10)
             .padding(.top, 14)
@@ -81,4 +114,3 @@ struct BottomNav: View {
 #Preview {
     ContentView()
 }
-

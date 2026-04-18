@@ -43,8 +43,10 @@ private enum ReceiptScanStep: Int, CaseIterable, Identifiable {
 struct ReceiptSplitFlowView: View {
     let groupBias: SwipePreferenceBias
     let friends: [ReceiptFriendProfile]
+    let onScanComplete: (ReceiptScanResponse) -> Void
 
     @Environment(\.dismiss) private var dismiss
+    @State private var selectedFriendIDs: Set<String>
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var stage: ReceiptFlowStage = .intro
     @State private var previewImage: UIImage?
@@ -54,6 +56,17 @@ struct ReceiptSplitFlowView: View {
     @State private var activeStepIndex = 0
 
     private let client = ReceiptScannerClient()
+
+    init(
+        groupBias: SwipePreferenceBias,
+        friends: [ReceiptFriendProfile],
+        onScanComplete: @escaping (ReceiptScanResponse) -> Void = { _ in }
+    ) {
+        self.groupBias = groupBias
+        self.friends = friends
+        self.onScanComplete = onScanComplete
+        _selectedFriendIDs = State(initialValue: Set(friends.map(\.id)))
+    }
 
     var body: some View {
         ZStack {
@@ -153,15 +166,19 @@ struct ReceiptSplitFlowView: View {
     private var introView: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(spacing: 14) {
+                FriendSelectionStrip(
+                    friends: friends,
+                    selectedFriendIDs: selectedFriendIDs,
+                    onToggle: toggleFriendSelection
+                )
+
                 PhotosPicker(selection: $selectedPhoto, matching: .images) {
                     PrimaryReceiptButton(
                         title: "Upload Receipt",
-                        subtitle: "Choose a photo to scan."
+                        subtitle: "Choose a photo after picking friends."
                     )
                 }
                 .buttonStyle(.plain)
-
-                CompactCrewStrip(friends: friends, highlights: biasHighlights)
             }
             .padding(20)
             .background(panelBackground)
@@ -302,21 +319,6 @@ struct ReceiptSplitFlowView: View {
             }
     }
 
-    private var biasHighlights: [String] {
-        let categoryHighlights = groupBias.categoryWeights
-            .sorted { $0.value > $1.value }
-            .prefix(2)
-            .map(\.key)
-        let tagHighlights = groupBias.tagWeights
-            .sorted { $0.value > $1.value }
-            .prefix(3)
-            .map(\.key)
-
-        return Array(Set(categoryHighlights + tagHighlights))
-            .map { prettify($0) }
-            .sorted()
-    }
-
     private func handlePhotoSelection(_ item: PhotosPickerItem) async {
         do {
             guard let rawData = try await item.loadTransferable(type: Data.self),
@@ -364,7 +366,7 @@ struct ReceiptSplitFlowView: View {
 
         do {
             let payload = ReceiptScanRequestPayload(
-                friends: friends,
+                friends: selectedFriends,
                 groupBias: groupBias
             )
             let result = try await client.scanReceipt(imageData: uploadData, payload: payload)
@@ -372,6 +374,7 @@ struct ReceiptSplitFlowView: View {
 
             await MainActor.run {
                 response = result
+                onScanComplete(result)
                 activeStepIndex = ReceiptScanStep.allCases.count - 1
                 withAnimation(.spring(response: 0.46, dampingFraction: 0.9)) {
                     stage = .results
@@ -386,6 +389,20 @@ struct ReceiptSplitFlowView: View {
                     stage = .failure
                 }
             }
+        }
+    }
+
+    private var selectedFriends: [ReceiptFriendProfile] {
+        let filtered = friends.filter { selectedFriendIDs.contains($0.id) }
+        return filtered.isEmpty ? friends : filtered
+    }
+
+    private func toggleFriendSelection(_ friend: ReceiptFriendProfile) {
+        if selectedFriendIDs.contains(friend.id) {
+            guard selectedFriendIDs.count > 1 else { return }
+            selectedFriendIDs.remove(friend.id)
+        } else {
+            selectedFriendIDs.insert(friend.id)
         }
     }
 
@@ -406,12 +423,6 @@ struct ReceiptSplitFlowView: View {
         }
     }
 
-    private func prettify(_ raw: String) -> String {
-        raw
-            .split(separator: "-")
-            .map { $0.capitalized }
-            .joined(separator: " ")
-    }
 }
 
 private struct PrimaryReceiptButton: View {
@@ -477,42 +488,91 @@ private struct PrimaryReceiptButton: View {
     }
 }
 
-private struct CompactCrewStrip: View {
+private struct FriendSelectionStrip: View {
     let friends: [ReceiptFriendProfile]
-    let highlights: [String]
+    let selectedFriendIDs: Set<String>
+    let onToggle: (ReceiptFriendProfile) -> Void
 
     var body: some View {
-        HStack(spacing: 14) {
-            HStack(spacing: -8) {
-                ForEach(friends.prefix(4)) { friend in
-                    Circle()
-                        .fill(avatarGradient(for: friend.id))
-                        .frame(width: 36, height: 36)
-                        .overlay {
-                            Text(String(friend.name.prefix(1)))
-                                .font(.system(size: 14, weight: .heavy))
-                                .foregroundStyle(.black.opacity(0.8))
-                        }
-                        .overlay {
-                            Circle()
-                                .stroke(.black, lineWidth: 2)
-                        }
-                }
-            }
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text("\(friends.count) friends")
-                    .font(.system(size: 14, weight: .heavy))
-                    .foregroundStyle(.white)
-
-                if let first = highlights.first {
-                    Text("Bias: \(first)")
-                        .font(.system(size: 12, weight: .medium))
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Split with")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(.white.opacity(0.62))
+                        .tracking(0.8)
+
+                    Text("\(selectedFriendIDs.count) selected")
+                        .font(.system(size: 18, weight: .heavy))
+                        .foregroundStyle(.white)
                 }
+
+                Spacer(minLength: 0)
+
+                Text("Tap to toggle")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.5))
             }
 
-            Spacer(minLength: 0)
+            HStack(spacing: 10) {
+                ForEach(friends) { friend in
+                    Button {
+                        onToggle(friend)
+                    } label: {
+                        VStack(spacing: 8) {
+                            ZStack(alignment: .bottomTrailing) {
+                                Circle()
+                                    .fill(avatarGradient(for: friend.id))
+                                    .frame(width: 54, height: 54)
+                                    .overlay {
+                                        Text(String(friend.name.prefix(1)))
+                                            .font(.system(size: 18, weight: .heavy))
+                                            .foregroundStyle(.black.opacity(0.82))
+                                    }
+                                    .overlay {
+                                        Circle()
+                                            .strokeBorder(
+                                                selectedFriendIDs.contains(friend.id)
+                                                ? Color.white.opacity(0.92)
+                                                : Color.black.opacity(0.55),
+                                                lineWidth: selectedFriendIDs.contains(friend.id) ? 2.5 : 1.5
+                                            )
+                                    }
+                                    .shadow(
+                                        color: selectedFriendIDs.contains(friend.id)
+                                            ? .white.opacity(0.16)
+                                            : .black.opacity(0.18),
+                                        radius: 8,
+                                        x: 0,
+                                        y: 5
+                                    )
+
+                                if selectedFriendIDs.contains(friend.id) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.system(size: 18, weight: .bold))
+                                        .foregroundStyle(.white)
+                                        .symbolRenderingMode(.palette)
+                                        .symbolVariant(.fill)
+                                }
+                            }
+
+                            Text(friend.name)
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(.white.opacity(selectedFriendIDs.contains(friend.id) ? 0.95 : 0.55))
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 6)
+                        .background(
+                            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                                .fill(selectedFriendIDs.contains(friend.id) ? Color.white.opacity(0.08) : Color.clear)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(friend.name)
+                    .accessibilityValue(selectedFriendIDs.contains(friend.id) ? "Selected" : "Not selected")
+                }
+            }
         }
     }
 

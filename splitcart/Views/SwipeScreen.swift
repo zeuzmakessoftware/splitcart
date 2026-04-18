@@ -44,6 +44,7 @@ struct SwipeHistoryEntry {
 }
 
 struct SwipeScreen: View {
+    @State private var selectedTab: BottomTab = .swipe
     @State private var selectedCategory: SwipeCategory = .all
     @State private var swipedItemIDs: [FoodSwipeItem.ID] = []
     @State private var likedItemIDs: Set<FoodSwipeItem.ID> = []
@@ -53,6 +54,8 @@ struct SwipeScreen: View {
     @State private var imageIndexes: [FoodSwipeItem.ID: Int] = [:]
     @State private var history: [SwipeHistoryEntry] = []
     @State private var isShowingReceiptFlow = false
+    @State private var latestReceiptResponse: ReceiptScanResponse?
+    @State private var customFriends: [ReceiptFriendProfile] = []
 
     private let items = FoodSwipeItem.sampleData
 
@@ -76,7 +79,7 @@ struct SwipeScreen: View {
     }
 
     private var demoCrew: [ReceiptFriendProfile] {
-        ReceiptFriendProfile.demoCrew(adjustedBy: swipeBias)
+        ReceiptFriendProfile.demoCrew(adjustedBy: swipeBias) + customFriends
     }
 
     var body: some View {
@@ -85,33 +88,43 @@ struct SwipeScreen: View {
                 BackgroundLayer()
 
                 VStack(spacing: 18) {
-                    TopBar(
-                        selectedCategory: $selectedCategory,
-                        likedCount: likedCount,
-                        remainingCount: remainingCount
-                    )
-                    .padding(.top, 18)
-                    .padding(.horizontal, 18)
-
-                    CardStack(
-                        cardWidth: min((geo.size.width - 36) * 0.74, 264),
-                        cardHeight: min(geo.size.height * 0.61, 560),
-                        items: Array(availableItems.prefix(1)),
-                        savedItemIDs: savedItemIDs,
-                        imageIndexes: imageIndexes,
-                        onImageAdvance: advanceImage,
-                        onUndo: undoLastSwipe,
-                        onToggleSave: toggleSaved,
-                        onFeedback: registerFeedback
-                    )
-                    .padding(.horizontal, 18)
-                    .frame(maxHeight: .infinity)
+                    Group {
+                        switch selectedTab {
+                        case .swipe:
+                            swipeTabContent(geo: geo)
+                        case .likes:
+                            collectionTabContent(
+                                title: "Liked Items",
+                                subtitle: "Every right swipe and love lives here.",
+                                items: items.filter { likedItemIDs.contains($0.id) || lovedItemIDs.contains($0.id) }
+                            )
+                        case .saved:
+                            collectionTabContent(
+                                title: "Saved Items",
+                                subtitle: "Shortlist dishes and groceries to revisit.",
+                                items: items.filter { savedItemIDs.contains($0.id) }
+                            )
+                        case .friends:
+                            FriendsView(
+                                friends: demoCrew,
+                                latestReceipt: latestReceiptResponse,
+                                onAddFriend: addFriend
+                            )
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 
                     BottomNav(
+                        selectedTab: selectedTab,
                         remainingCount: remainingCount,
                         likedCount: likedCount,
                         savedCount: savedItemIDs.count,
-                        passedCount: passedItemIDs.count,
+                        friendsCount: latestReceiptResponse?.friends.count ?? demoCrew.count,
+                        onTabSelected: { tab in
+                            withAnimation(.spring(response: 0.36, dampingFraction: 0.88)) {
+                                selectedTab = tab
+                            }
+                        },
                         onScanTap: {
                             withAnimation(.spring(response: 0.4, dampingFraction: 0.86)) {
                                 isShowingReceiptFlow = true
@@ -126,9 +139,126 @@ struct SwipeScreen: View {
         .fullScreenCover(isPresented: $isShowingReceiptFlow) {
             ReceiptSplitFlowView(
                 groupBias: swipeBias,
-                friends: demoCrew
+                friends: demoCrew,
+                onScanComplete: { response in
+                    latestReceiptResponse = response
+                }
             )
         }
+    }
+
+    @ViewBuilder
+    private func swipeTabContent(geo: GeometryProxy) -> some View {
+        VStack(spacing: 18) {
+            TopBar(
+                selectedCategory: $selectedCategory,
+                likedCount: likedCount,
+                remainingCount: remainingCount
+            )
+            .padding(.top, 18)
+            .padding(.horizontal, 18)
+
+            CardStack(
+                cardWidth: min((geo.size.width - 36) * 0.74, 264),
+                cardHeight: min(geo.size.height * 0.61, 560),
+                items: Array(availableItems.prefix(1)),
+                savedItemIDs: savedItemIDs,
+                imageIndexes: imageIndexes,
+                onImageAdvance: advanceImage,
+                onUndo: undoLastSwipe,
+                onToggleSave: toggleSaved,
+                onFeedback: registerFeedback
+            )
+            .padding(.horizontal, 18)
+            .frame(maxHeight: .infinity)
+        }
+    }
+
+    private func collectionTabContent(title: String, subtitle: String, items: [FoodSwipeItem]) -> some View {
+        ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(title)
+                        .font(.system(size: 30, weight: .heavy))
+                        .foregroundStyle(.white)
+
+                    Text(subtitle)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.68))
+                }
+
+                if items.isEmpty {
+                    RoundedRectangle(cornerRadius: 28, style: .continuous)
+                        .fill(.white.opacity(0.06))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                                .stroke(.white.opacity(0.08), lineWidth: 1)
+                        }
+                        .overlay {
+                            VStack(spacing: 10) {
+                                Text("Nothing here yet")
+                                    .font(.system(size: 20, weight: .heavy))
+                                    .foregroundStyle(.white)
+
+                                Text("Swipe a few items first, then this section starts filling in.")
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundStyle(.white.opacity(0.64))
+                            }
+                            .padding(24)
+                        }
+                        .frame(height: 220)
+                } else {
+                    VStack(spacing: 12) {
+                        ForEach(items) { item in
+                            HStack(alignment: .top, spacing: 12) {
+                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    .fill(.white.opacity(0.08))
+                                    .frame(width: 62, height: 62)
+                                    .overlay {
+                                        Text("\(item.matchScore)%")
+                                            .font(.system(size: 14, weight: .heavy))
+                                            .foregroundStyle(Color(red: 0.99, green: 0.78, blue: 0.37))
+                                    }
+
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(item.name)
+                                        .font(.system(size: 16, weight: .heavy))
+                                        .foregroundStyle(.white)
+
+                                    Text(item.detail)
+                                        .font(.system(size: 13, weight: .medium))
+                                        .foregroundStyle(.white.opacity(0.66))
+                                        .lineLimit(2)
+
+                                    Text(item.priceText)
+                                        .font(.system(size: 12, weight: .bold))
+                                        .foregroundStyle(.white.opacity(0.58))
+                                }
+
+                                Spacer()
+                            }
+                            .padding(16)
+                            .background(
+                                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                    .fill(.white.opacity(0.06))
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                            .stroke(.white.opacity(0.08), lineWidth: 1)
+                                    }
+                            )
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, 18)
+            .padding(.top, 18)
+            .padding(.bottom, 24)
+        }
+    }
+
+    private func addFriend(name: String, vibe: String) {
+        guard !demoCrew.contains(where: { $0.name.caseInsensitiveCompare(name) == .orderedSame }) else { return }
+        customFriends.append(.custom(name: name, vibe: vibe))
     }
 
     private func advanceImage(for item: FoodSwipeItem, forward: Bool) {
