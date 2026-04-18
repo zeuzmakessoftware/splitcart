@@ -38,3 +38,7 @@ typing_extensions==4.15.0
 uritemplate==4.2.0
 urllib3==2.6.3
 websockets==15.0.1
+fastapi==0.115.11
+uvicorn==0.34.0
+python-multipart==0.0.9
+httpx==0.28.1

@@ -1,0 +1,87 @@
+--- SplitCart API Test ---
+Endpoint: http://localhost:8000/itemize
+File:     receipt.jpg
+Status:   Sending request (this may take a few seconds)...
+
+✅ Success! Received JSON response:
+----------------------------------------
+{
+  "store": "Green Supermarket",
+  "date": "",
+  "items": [
+    {
+      "name": "APPLE",
+      "price": 1.0,
+      "quantity": 2
+    },
+    {
+      "name": "BANANA",
+      "price": 1.5,
+      "quantity": 3
+    },
+    {
+      "name": "ORANGE",
+      "price": 1.2,
+      "quantity": 2
+    },
+    {
+      "name": "PEAR",
+      "price": 0.75,
+      "quantity": 1
+    },
+    {
+      "name": "GRAPES",
+      "price": 3.0,
+      "quantity": 2
+    },
+    {
+      "name": "STRAWBERRY",
+      "price": 2.5,
+      "quantity": 1
+    },
+    {
+      "name": "BLUEBERRY",
+      "price": 2.0,
+      "quantity": 1
+    },
+    {
+      "name": "KIWI",
+      "price": 1.8,
+      "quantity": 2
+    },
+    {
+      "name": "WATERMELON",
+      "price": 4.5,
+      "quantity": 1
+    },
+    {
+      "name": "LEMON",
+      "price": 0.6,
+      "quantity": 1
+    },
+    {
+      "name": "RASPBERRY",
+      "price": 3.0,
+      "quantity": 1
+    },
+    {
+      "name": "MILK",
+      "price": 1.5,
+      "quantity": 1
+    },
+    {
+      "name": "CHEESE",
+      "price": 2.8,
+      "quantity": 1
+    },
+    {
+      "name": "YOGURT",
+      "price": 1.2,
+      "quantity": 1
+    }
+  ],
+  "subtotal": 0,
+  "tax": 0,
+  "total": 27.35
+}
+----------------------------------------

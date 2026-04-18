@@ -47,7 +47,7 @@ def itemize_receipt(receipt_path: str):
 }
 
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         contents=[
             """Extract the receipt into JSON.
 
